@@ -165,7 +165,11 @@ func InsertIntoTable(db *sql.DB, tableName string, data map[string]string) (bool
 	var values []interface{}
 	for key, value := range data {
 		columns = append(columns, key)
-		placeholders = append(placeholders, "?")
+		if key == "experiment_key" || key == "rotator_key" {
+			placeholders = append(placeholders, "UNHEX(?)")
+		} else {
+			placeholders = append(placeholders, "?")
+		}
 		values = append(values, value)
 	}
 	query := fmt.Sprintf("INSERT IGNORE INTO %s (%s) VALUES (%s)", tableName, strings.Join(columns, ", "), strings.Join(placeholders, ", "))
